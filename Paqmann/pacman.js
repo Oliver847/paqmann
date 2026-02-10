@@ -46,14 +46,9 @@ const tileMap = [
 
 const walls = new Set();
 const food = new Set();
-const Ghosts = new Set();
+const ghosts = new Set();
 let pacman;
 
-window.onload = function(){
-    board = document.getElementById("board");
-    board.height = boardHeight;
-    board.width = boardWidth;
-}
  function loadImages() {
     Wall2Image = new Image();
     Wall2Image.src = "./wall2.png";
@@ -77,18 +72,23 @@ window.onload = function(){
     pacmanRightImage.src = "./pacmanRight.png";
  }
 window.onload=function() {
-    board = document.getElementById("board");
+    board = this.document.getElementById("board");
     board.height = boardHeight;
     board.width = boardWidth;
     context = board.getContext("2d"); //used for drawing on the board
-    
+    context.imageSmoothingEnabled = false;
+
     loadImages();
+    loadmap();
+
+    update();
+
 }
 
 function loadmap() {
     walls.clear();
     food.clear();
-    Ghosts.clear();
+    ghosts.clear();
 
     for (let r = 0; r< rowCount; r++) {
       for (let c = 0; c < columnCount; c++) {
@@ -105,26 +105,26 @@ function loadmap() {
           else if (tileMapChar == "b" ) {
               //blue ghost
               const ghost = new Block(Inky2Image,x,y,tileSize,tileSize);
-              ghost.add(ghost);
+              ghosts.add(ghost);
           }
           else if (tileMapChar == "o") {
               //orange ghost
-              const ghost = new Block(Clide2Image,x.y,tileSize,tileSize);
-              ghost.add(ghost);
+              const ghost = new Block(Clide2Image,x,y,tileSize,tileSize);
+              ghosts.add(ghost);
           }
               else if (tileMapChar == "p" ) {
               //blue ghost
               const ghost = new Block(Pinky2Image,x,y,tileSize,tileSize);
-              ghost.add(ghost);
+              ghosts.add(ghost);
           }
           else if (tileMapChar == "r") {
               //orange ghost
-              const ghost = new Block(Blinky2Image,x.y,tileSize,tileSize);
-              ghost.add(ghost);
+              const ghost = new Block(Blinky2Image,x,y,tileSize,tileSize);
+              ghosts.add(ghost);
           }
           else if (tileMapChar == "P") {
               //Paqmann
-              paqmann = new Block(pacmanRightImage,x.y,tileSize,tileSize);
+              pacman = new Block(pacmanRightImage, x, y, tileSize, tileSize);
           }
           else if (tileMapChar == " ") {
               //empty is food
@@ -135,14 +135,27 @@ function loadmap() {
 }
 
 class Block {
-	construction(image,x,y,width,height){
+	constructor(image,x,y,width,height){
         this.image = image;
-	    this.x=x;
-	    this.y=y;
-	    this.width=width;
-	    this.height=height;
+	    this.x = x;
+	    this.y = y;
+	    this.width = width;
+	    this.height = height;
         
 	    this.startx=x;
 	    this.starty=y;
     }
 }
+
+function draw() {
+    context.drawImage(pacman.image, pacman.x, pacman.y, pacman.width, pacman.height);
+    for (let ghost of ghosts.values()){
+        context.drawImage(ghost.image,ghost.x, ghost.y, ghost.width, ghost.height)
+    }
+}
+
+function update(){
+    draw();
+    setTimeout(update, 50); //20 FPS 1=> 1000/20= 50
+}
+
