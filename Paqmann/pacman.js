@@ -45,7 +45,7 @@ const tileMap = [
 ];
 
 const walls = new Set();
-const food = new Set();
+const foods = new Set();
 const ghosts = new Set();
 let pacman;
 
@@ -87,7 +87,7 @@ window.onload=function() {
 
 function loadmap() {
     walls.clear();
-    food.clear();
+    foods.clear();
     ghosts.clear();
 
     for (let r = 0; r< rowCount; r++) {
@@ -128,7 +128,8 @@ function loadmap() {
           }
           else if (tileMapChar == " ") {
               //empty is food
-              const food = new Block(null,x + 14,y + 14,tileSize,tileSize);
+              const food = new Block(null, x + 14, y + 14, 4, 4);
+              foods.add(food)
           }
       }
     }
@@ -144,6 +145,22 @@ class Block {
         
 	    this.startx=x;
 	    this.starty=y;
+
+        this.direction = 'R';
+        this.velocityX = 0;
+        this.velocityY = 0;
+    }
+
+    updateDirection(direction) {
+        this.direction = directioon;
+        this.updateVelocity();
+    }
+
+    updateVelocity() {
+        if (this.direction == 'U') {
+            this.velocityX = 0;
+            this.velocityY = -tileSize/4;
+        }
     }
 }
 
@@ -151,7 +168,13 @@ function draw() {
     context.drawImage(pacman.image, pacman.x, pacman.y, pacman.width, pacman.height);
     for (let ghost of ghosts.values()){
         context.drawImage(ghost.image,ghost.x, ghost.y, ghost.width, ghost.height)
-
+    }
+    for (let wall of walls.values()){
+        context.drawImage(wall.image,wall.x, wall.y, wall.width,wall.height);
+    }
+    context.fillStyle = "pink";
+    for (let food of foods.values()){
+        context.fillRect(food.x, food.y, food.width, food.height);
     }
 }
 
