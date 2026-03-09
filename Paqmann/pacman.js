@@ -155,8 +155,19 @@ class Block {
         const prevdirection = this.direction;
         this.direction = direction;
         this.updateVelocity();
-    } //Video time = 45:38
+        this.x += this.velocityX;
+        this.y += this.velocityY;
 
+        for (let wall of walls.values()) {
+           if (collision(this, wall)) {
+                this.x -= this.velocityX;
+                this.y -= this.velocityY;
+                this.direction = prevdirection;
+                this.updateVelocity();
+                return;
+           }
+        }
+    } 
     updateVelocity() {
         if (this.direction == 'U') {
             this.velocityX = 0;
@@ -219,6 +230,20 @@ function movePacman(e) {
     }
      else if (e.code == "ArrowRight" || e.code == "KeyD") {
         pacman.updateDirection('R');
+    }
+
+    //update pacman images
+    if (pacman.direction == 'U') {
+        pacman.image = pacmanUpImage;
+    }
+    else if (pacman.direction == 'D') {
+        pacman.image = pacmanDownImage;
+    }
+    else if (pacman.direction == 'L') {
+        pacman.image = pacmanLeftImage;
+    }
+    else if (pacman.direction == 'R') {
+        pacman.image = pacmanRightImage;
     }
 }
 
