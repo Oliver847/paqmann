@@ -49,7 +49,9 @@ const foods = new Set();
 const ghosts = new Set();
 let pacman;
 
- function loadImages() {
+const directions = ['U', 'D', 'L', 'R']; //up down left right
+
+function loadImages() {
     Wall2Image = new Image();
     Wall2Image.src = "./wall2.png";
     
@@ -80,7 +82,10 @@ window.onload=function() {
 
     loadImages();
     loadmap();
-
+    for (let ghost of ghosts.values()) {
+        const newDirection = directions[Math.floor(Math.random()*4)];
+        ghost.updateDirection(newDirection);
+    }
     update();
     document.addEventListener("keyup", movePacman);
 }
@@ -213,6 +218,16 @@ function move() {
             pacman.x -= pacman.velocityX;
             pacman.y -= pacman.velocityY;
             break;
+        }
+     }
+
+     for (let ghost of ghosts.values()) {
+        ghost.x += ghost.velocityX;
+        ghost.y += ghost.velocityY;
+        for (let wall of walls.values()) {
+            ghost.x -= ghost.velocityX;
+            ghost.y -= ghost.velocityY;
+            //video time = 52:06
         }
      }
 }
