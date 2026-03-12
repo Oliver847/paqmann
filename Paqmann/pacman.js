@@ -30,7 +30,7 @@ const tileMap = [
     "XXXX XXXX XXXX XXXX",
     "OOOX X       X XOOO",
     "XXXX X XXrXX X XXXX",
-    "O       bpo       O",
+    "X       bpo       X",
     "XXXX X XXXXX X XXXX",
     "OOOX X       X XOOO",
     "XXXX X XXXXX X XXXX",
@@ -50,6 +50,9 @@ const ghosts = new Set();
 let pacman;
 
 const directions = ['U', 'D', 'L', 'R']; //up down left right
+let score = 0;
+let lives = 5;
+let gameOver = false;
 
 function loadImages() {
     Wall2Image = new Image();
@@ -206,6 +209,16 @@ function draw() {
     for (let food of foods.values()) {
         context.fillRect(food.x, food.y, food.width, food.height);
     }
+
+    //score
+    context.fillStyle = "white";
+    context.font="14px sans-serif";
+    if (gameOver) {
+        context.fillText("Get Good: " + String(score), tileSize/2, tileSize/2);
+    }
+    else {
+        context.fillText("x" + String(lives) + " " + String(score),  tileSize/2, tileSize/2);
+    }
 }
 
 function move() {
@@ -222,16 +235,34 @@ function move() {
      }
 
      for (let ghost of ghosts.values()) {
+
+        if (ghost.y == tileSize*9 && ghost.direction != 'U' && ghost.direction != 'D') {
+            ghost.updateDirection('U');
+        }
+
         ghost.x += ghost.velocityX;
         ghost.y += ghost.velocityY;
         for (let wall of walls.values()) {
+            if (collision(ghost, wall) || ghost.x <= 0 || ghost.x + ghost.width >= boardWidth) {
             ghost.x -= ghost.velocityX;
             ghost.y -= ghost.velocityY;
-            //video time = 52:06
+            const newDirection = directions[Math.floor(Math.random()*4)];
+            ghost.updateDirection(newDirection);
         }
-     }
-}
+        }
+    }
 
+    //check food collision
+    let foodEaten = null;
+    for (let food of foods.values()) {
+        if (collision(pacman, food)) {
+            foodEaten = food;
+            score += 10;
+            break;
+        }
+    }
+    foods.delete(foodEaten);
+}
 
 function movePacman(e) {
     if (e.code == "ArrowUp" || e.code == "KeyW") {
@@ -272,5 +303,5 @@ function update() {
     move();
     draw();
     setTimeout(update, 50); //20 FPS 1=> 1000/20= 50
-}
+} // fix collision
 
